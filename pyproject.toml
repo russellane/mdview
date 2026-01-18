@@ -1,0 +1,15 @@
+[project]
+name = "mdview"
+version = "0.1.0"
+description = "Default template for PDM package"
+authors = [
+    {name = "Russel Lane", email = "russel@rlane.com"},
+]
+dependencies = ["markdown>=3.10", "pygments>=2.19.2", "pywebview>=6.1"]
+requires-python = "==3.12.*"
+readme = "README.md"
+license = {text = "MIT"}
+
+
+[tool.pdm]
+distribution = false
