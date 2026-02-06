@@ -481,9 +481,9 @@ def main() -> int:
     )
     parser.add_argument(
         "file",
-        type=Path,
         nargs="?",
-        help="Path to the Markdown file to display",
+        default="-",
+        help="Path to the Markdown file to display (default: stdin)",
     )
     theme_group = parser.add_mutually_exclusive_group()
     theme_group.add_argument(
@@ -498,29 +498,22 @@ def main() -> int:
     )
     args = parser.parse_args()
 
-    if args.file:
-        md_path = args.file
+    if args.file == "-":
+        md_content = sys.stdin.read()
+        title = "stdin"
     else:
-        # Open file dialog if no file specified
-        file_types = ("Markdown Files (*.md;*.markdown)", "All Files (*.*)")
-        result = webview.windows.create_file_dialog(
-            webview.OPEN_DIALOG, file_types=file_types
-        )
-        if not result:
-            print("No file selected.", file=sys.stderr)
+        md_path = Path(args.file)
+        if not md_path.exists():
+            print(f"Error: File not found: {md_path}", file=sys.stderr)
             return 1
-        md_path = Path(result[0])
+        md_content = md_path.read_text(encoding="utf-8")
+        title = md_path.name
 
-    if not md_path.exists():
-        print(f"Error: File not found: {md_path}", file=sys.stderr)
-        return 1
-
-    md_content = md_path.read_text(encoding="utf-8")
     css = GITHUB_CSS_LIGHT if args.light else GITHUB_CSS_DARK
-    html_document = create_html_document(md_content, title=md_path.name, css=css)
+    html_document = create_html_document(md_content, title=title, css=css)
 
     window = webview.create_window(
-        title=f"Markdown Viewer - {md_path.name}",
+        title=f"Markdown Viewer - {title}",
         html=html_document,
         width=1000,
         height=800,
