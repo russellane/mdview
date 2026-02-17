@@ -1,9 +1,6 @@
-#!/usr/bin/env python3
-"""
+"""Markdown viewer with GitHub-style rendering."""
 
-Markdown viewer with GitHub-style rendering.
-
-"""
+# -------------------------------------------------------------------------------
 
 import argparse
 import sys
@@ -14,7 +11,8 @@ import webview
 
 GITHUB_CSS_LIGHT = """
 body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans",
+        Helvetica, Arial, sans-serif;
     font-size: 16px;
     line-height: 1.5;
     word-wrap: break-word;
@@ -84,7 +82,8 @@ code {
     white-space: break-spaces;
     background-color: #eff1f3;
     border-radius: 6px;
-    font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+    font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
+        "Liberation Mono", monospace;
 }
 
 pre {
@@ -217,7 +216,8 @@ hr {
 
 GITHUB_CSS_DARK = """
 body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans",
+        Helvetica, Arial, sans-serif;
     font-size: 16px;
     line-height: 1.5;
     word-wrap: break-word;
@@ -287,7 +287,8 @@ code {
     white-space: break-spaces;
     background-color: #343942;
     border-radius: 6px;
-    font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+    font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
+        "Liberation Mono", monospace;
 }
 
 pre {
@@ -434,11 +435,8 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 
 
 def render_markdown(md_content: str) -> str:
-    """
+    """Convert Markdown content to HTML using GitHub-flavored extensions."""
 
-    Convert Markdown content to HTML using GitHub-flavored extensions.
-
-    """
     md = markdown.Markdown(
         extensions=[
             "fenced_code",
@@ -461,21 +459,15 @@ def render_markdown(md_content: str) -> str:
 
 
 def create_html_document(md_content: str, title: str, css: str) -> str:
-    """
+    """Create a complete HTML document with GitHub styling."""
 
-    Create a complete HTML document with GitHub styling.
-
-    """
     html_content = render_markdown(md_content)
     return HTML_TEMPLATE.format(title=title, css=css, content=html_content)
 
 
 def main() -> int:
-    """
+    """Main entry point for the Markdown viewer."""
 
-    Main entry point for the Markdown viewer.
-
-    """
     parser = argparse.ArgumentParser(
         description="Display Markdown files with GitHub-style formatting"
     )
@@ -512,7 +504,7 @@ def main() -> int:
     css = GITHUB_CSS_LIGHT if args.light else GITHUB_CSS_DARK
     html_document = create_html_document(md_content, title=title, css=css)
 
-    window = webview.create_window(
+    webview.create_window(
         title=f"Markdown Viewer - {title}",
         html=html_document,
         width=1000,

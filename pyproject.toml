@@ -1,20 +1,69 @@
 [project]
-name = "mdview"
-version = "0.1.0"
+name = "rlane-mdview"
+version = "1.0.0"
 description = "Markdown viewer with GitHub-style rendering"
 authors = [
     {name = "Russel Lane", email = "russel@rlane.com"},
 ]
+license = {text = "MIT"}
+requires-python = ">=3.10"
 dependencies = [
     "markdown>=3.10",
     "pygments>=2.19.2",
     "pywebview>=6.1",
 ]
-requires-python = "==3.12.*"
-license = {text = "MIT"}
 
 [project.scripts]
 mdview = "mdview:main"
 
-[tool.pdm]
-distribution = true
+[dependency-groups]
+dev = [
+    "black>=24.10.0",
+    "flake8-bugbear>=24.12.12",
+    "flake8-pydocstyle>=0.2.5",
+    "flake8-pylint>=0.2.1",
+    "flake8-pytest-style>=2.1.0",
+    "flake8-simplify>=0.21.0",
+    "flake8>=7.1.1",
+    "isort>=5.13.2",
+    "pytest-cov>=6.0.0",
+    "pytest>=8.3.4",
+    "toml>=0.10.2",
+]
+
+[tool.coverage.run]
+omit = ["mdview/__main__.py"]
+
+[tool.black]
+line-length = "97"
+
+[tool.isort]
+line_length = "97"
+profile = "black"
+
+[tool.pylint.format]
+max-line-length = "97"
+
+[tool.pylint.messages_control]
+enable = [
+    "useless-suppression",
+]
+fail-on = [
+    # useless-suppression
+    "I0021",
+]
+
+[tool.pydocstyle]
+convention = "google"
+add-ignore = [
+    # "D105",     # pep257 numpy google   # Missing docstring in magic method
+    "D105",
+    # "D202",     # pep257 numpy google   # No blank lines allowed after function docstring
+    "D202",
+]
+
+[build-system]
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
+
+# vim: set ts=4 sw=4 et:
