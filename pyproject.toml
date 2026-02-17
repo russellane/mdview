@@ -11,10 +11,11 @@ dependencies = [
     "markdown>=3.10",
     "pygments>=2.19.2",
     "pywebview>=6.1",
+    "rlane-libcli>=1.0.10",
 ]
 
 [project.scripts]
-mdview = "mdview:main"
+mdview = "mdview.cli:main"
 
 [dependency-groups]
 dev = [
