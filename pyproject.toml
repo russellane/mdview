@@ -19,6 +19,7 @@ mdview = "mdview.cli:main"
 
 [dependency-groups]
 dev = [
+    "mypy>=1.14.1",
     "pytest-cov>=6.0.0",
     "pytest>=8.3.4",
     "ruff>=0.6.9",
@@ -76,6 +77,16 @@ convention = "google"
     # pylint: magic value used in comparison
     "PLR2004",
 ]
+
+[tool.mypy]
+
+[[tool.mypy.overrides]]
+module = [
+    "markdown",
+    "webview",
+    "libcli",
+]
+ignore_missing_imports = true
 
 [build-system]
 requires = ["pdm-backend"]
