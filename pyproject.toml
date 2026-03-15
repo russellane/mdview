@@ -1,6 +1,6 @@
 [project]
 name = "rlane-mdview"
-version = "1.0.1"
+version = "1.0.2"
 description = "Markdown viewer with GitHub-style rendering"
 authors = [
     {name = "Russel Lane", email = "russel@rlane.com"},
