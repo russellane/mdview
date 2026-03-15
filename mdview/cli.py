@@ -65,7 +65,7 @@ class MdviewCLI(BaseCLI):
         html_document = create_html_document(md_content, title=title, css=css)
 
         webview.create_window(
-            title=f"Markdown Viewer - {title}",
+            f"Markdown Viewer - {title}",
             html=html_document,
             width=1000,
             height=800,

@@ -421,6 +421,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{title}</title>
     <style>{css}</style>
+    <style>* {{ -webkit-user-select: text; user-select: text; }}</style>
 </head>
 <body>
 {content}
