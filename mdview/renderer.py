@@ -425,9 +425,57 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 </head>
 <body>
 {content}
+{script}
 </body>
 </html>
 """
+
+# Reload on cmd-R, F5, or right-click "Refresh"; calls back into python via pywebview js_api.
+RELOAD_SCRIPT = """<style>
+#mdview-menu {
+    position: fixed; z-index: 1000; display: none; min-width: 120px; padding: 4px 0;
+    background: #2d333b; color: #e6edf3; border: 1px solid #444c56; border-radius: 6px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4); font: 13px -apple-system, sans-serif;
+    -webkit-user-select: none; user-select: none;
+}
+#mdview-menu div { padding: 4px 16px; cursor: default; }
+#mdview-menu div:hover { background: #316dca; color: #ffffff; }
+</style>
+<div id="mdview-menu"><div id="mdview-refresh">Refresh</div></div>
+<script>
+(function () {
+    var menu = document.getElementById("mdview-menu");
+    window.scrollTo(0, __SCROLL_Y__);
+    function reload() {
+        menu.style.display = "none";
+        if (window.pywebview && window.pywebview.api) {
+            window.pywebview.api.reload(Math.round(window.scrollY)).then(function (html) {
+                document.open();
+                document.write(html);
+                document.close();
+            });
+        }
+    }
+    document.addEventListener("keydown", function (e) {
+        if (e.key === "F5" || ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "r")) {
+            e.preventDefault();
+            reload();
+        } else if (e.key === "Escape") {
+            menu.style.display = "none";
+        }
+    });
+    document.addEventListener("contextmenu", function (e) {
+        e.preventDefault();
+        menu.style.display = "block";
+        var x = Math.min(e.clientX, window.innerWidth - menu.offsetWidth - 4);
+        var y = Math.min(e.clientY, window.innerHeight - menu.offsetHeight - 4);
+        menu.style.left = Math.max(0, x) + "px";
+        menu.style.top = Math.max(0, y) + "px";
+    });
+    document.addEventListener("click", function () { menu.style.display = "none"; });
+    document.getElementById("mdview-refresh").addEventListener("click", reload);
+})();
+</script>"""
 
 
 def render_markdown(md_content: str) -> str:
@@ -454,8 +502,9 @@ def render_markdown(md_content: str) -> str:
     return md.convert(md_content)
 
 
-def create_html_document(md_content: str, title: str, css: str) -> str:
+def create_html_document(md_content: str, title: str, css: str, scroll_y: int = 0) -> str:
     """Create a complete HTML document with GitHub styling."""
 
     html_content = render_markdown(md_content)
-    return HTML_TEMPLATE.format(title=title, css=css, content=html_content)
+    script = RELOAD_SCRIPT.replace("__SCROLL_Y__", str(int(scroll_y)))
+    return HTML_TEMPLATE.format(title=title, css=css, content=html_content, script=script)

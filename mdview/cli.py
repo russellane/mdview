@@ -51,26 +51,54 @@ class MdviewCLI(BaseCLI):
         """Command line interface entry point (method)."""
 
         if self.options.file == "-":
-            md_content = sys.stdin.read()
+            self._md_path: Path | None = None
+            self._md_content = sys.stdin.read()
             title = "stdin"
         else:
-            md_path = Path(self.options.file)
-            if not md_path.exists():
-                print(f"Error: File not found: {md_path}", file=sys.stderr)
+            self._md_path = Path(self.options.file)
+            if not self._md_path.exists():
+                print(f"Error: File not found: {self._md_path}", file=sys.stderr)
                 sys.exit(1)
-            md_content = md_path.read_text(encoding="utf-8")
-            title = md_path.name
+            self._md_content = self._md_path.read_text(encoding="utf-8")
+            title = self._md_path.name
 
-        css = GITHUB_CSS_LIGHT if self.options.light else GITHUB_CSS_DARK
-        html_document = create_html_document(md_content, title=title, css=css)
+        self._title = title
+        self._css = GITHUB_CSS_LIGHT if self.options.light else GITHUB_CSS_DARK
+        html_document = create_html_document(self._md_content, title=title, css=self._css)
 
         webview.create_window(
             f"Markdown Viewer - {title}",
             html=html_document,
             width=1000,
             height=800,
+            js_api=_Api(self),
         )
         webview.start()
+
+    def reload(self, scroll_y: int = 0) -> str:
+        """Re-read the Markdown file (if not stdin) and return the new HTML document."""
+
+        if self._md_path is not None:
+            try:
+                self._md_content = self._md_path.read_text(encoding="utf-8")
+            except OSError as err:
+                print(f"Error: {err}", file=sys.stderr)
+        return create_html_document(
+            self._md_content, title=self._title, css=self._css, scroll_y=scroll_y
+        )
+
+
+class _Api:
+    """Methods exposed to javascript as `window.pywebview.api`."""
+
+    def __init__(self, cli: MdviewCLI) -> None:
+        # Private attribute; pywebview does not expose (or recurse into) `_` names.
+        self._cli = cli
+
+    def reload(self, scroll_y: int = 0) -> str:
+        """Return the reloaded document; javascript swaps it in."""
+
+        return self._cli.reload(scroll_y)
 
 
 def main(args: list[str] | None = None) -> None:
